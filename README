@@ -1,0 +1,100 @@
+/*Duminica Ana-Maria 312CC*/
+Pentru realizarea acestei teme am facut cerintele 1 si 2. Am definit o structura
+de pixeli ce contine valoarea pentru rosu, verde si albastru de tipul 
+unsigned char si o structura Node pentru fiecare nod din arborele cuaternar ce 
+contine o variabila color de tip Pixel si cei 4 copii de tip Node.
+
+Am implementat o functie care imi creeaza un nod nou in arbore ce are ca 
+parametrii o variabila de tip Pixel. Mai intai aloc dinamic memorie pentru 
+acesta si ii atribui culorile din variabila Pixel. Dupa care initializez 
+copiii nodului cu NULL.
+
+Functia color imi creeaza culoarea medie dintr-un nod pentru a determina mai
+departe daca acesta trebuie impartit sau nu. Are ca parametrii o matrice de tip 
+Pixel, doua variabile de tip int, x si y, ce reprezinta coordonatele nodului si 
+o variabila size ce reprezinta dimensiunea nodului. Declar 3 variabile de tip 
+unsigned long long prin care voi calcula cat rosu, verde si albastru se gaseste 
+in total in imaginea actuala. Dupa aceea returnez o variabila de tip Pixel ce 
+contine media aritmetica a culorilor imaginii, adica nodului in care ma aflu.
+
+Functia meancalc ce are ca parametrii matricea de tip Pixel, coordonatele x, y 
+de tip int, variabila de tip unsigned int size, adica dimensiunea imaginii, si 
+o variabila color de tip Pixel. Parcurg matricea de structuri de tip Pixel de la 
+coordonatele mele initiale pana la dimensiunea imaginii, latimea si inaltimea 
+au aceeasi valoare caci imaginea este patrata. Astfel calculez cu ajutorul 
+formulei cata culoare exista in imagine. Fac diferenta intre media aritmetica 
+calculata anterior in toata imaginea si fiecare pixel in parte. In cazul in care
+de exemplu imaginea ar fi doar rosie, atunci diferenta ar fi 0, iar media 
+aritmetica ale celorlalte culori ar fi 0. De aici ar rezulta ca media este 0 si 
+imaginea nu ar mai trebui divizata. 
+
+Functia Creare_quadtree are ca parametrii matricea de tip Pixel, coordonatele x 
+si y, dimensiunea imaginii si factorul ce reprezinta pragul prin care divizez 
+sau nu imaginea. Daca dimensiunea este 1 atunci inseamna ca nu mai putem diviza,
+am ajuns la un pixel si astfel returnam un nod nou, nodul acesta va fi un nod 
+frunza. Apelam functia color prin care aflam culorile medii din imagine si dupa 
+aceea apelam functia meancalc prin care calculam media cu ajutorul culorilor 
+aflate mai devreme. Daca media este mai mica decat pragul impus atunci inseamna 
+ca imaginea nu mai trebuie divizata, deci avem un nod frunza. Apelam astfel 
+functia createnode cu culorile aflate si returnam nodul. Daca media este mai 
+mare decat pragul impus atunci avem un nod intern si trebuie impartit in 4. Mai 
+intai cream nodul, impartim dimensiunea la 2 si apelam recursiv pentru cei 4 
+copii functia Creare_quadtree. Primul copil va avea coordonatele de inceput x si 
+y caci va incepe de stanga sus ca si parintele, al doilea va avea coordonatele x 
+si y plus dimensiunea caci va fi cadranul din dreapta sus, al treilea x plus 
+dimensiunea si y plus dimensiunea, cadranul din dreapta jos, si ultimul x plus 
+dimensiunea si y, cadranul din stanga jos. Astfel apelam functia si la fel aflam 
+daca nodul are media mai mica decat factorul si daca divizam sau nu. In final 
+functia returneaza parintele, adica root-ul arborelui cuaternar.
+
+Functia level imi returneaza numarul de niveluri din arbor. Cu ajutorul 
+unei functii recursive pornind din root ma duc in jos spre ramuri si o calculez 
+pe cea mai lunga. Daca nodul este nul, adica nodul parinte nu are copii, atunci
+returnez 0. Compar nivelurile gasite pentru fiecare copil si in final returnez 
+nr maxim de muchii plus 1.
+
+Functia nr_blocuri returneaza numarul de frunze din arbore. Din root apelez 
+recursiv functia nr_blocuri cu ajutorul unui for pentru fiecare copil. Daca 
+copilul este NULL, inseamna ca am ajuns la un nod frunza si returnam 1 si 
+adaugam la nr de noduri. In final returnam variabila nr.
+
+Functia bloc_mare returneaza dimensiunea celui mai mare bloc din imagine. Incep 
+cu nodul root si apelez recursiv functia, cu dimensiunea injumatatita pentru 
+nodul copil, pana cand ajung la un nod frunza. Daca copilul este NULL atunci 
+nodul parinte este o frunza si verific daca dimensiunea acestuia este mai mare 
+decat dimensiunea maxima pana in acel moment.
+
+Functia printquadtree are ca parametrii un nod de tip Node si un fisier. 
+Folosesc o coada pentru a parcurge nodurile de la stanga la dreapta pe fiecare 
+nivel. Adaug initial root-ul in coada. Cat timp in coada mai sunt noduri ce nu 
+au fost scrise in fisier, iau primul nod din coada si verific daca are copii. 
+Daca nu are atunci nodul este frunza si scriem in fisier 1, adica tipul nodului 
+frunza. Dupa aceea scriem in fisier cele 3 culori, rosu, verde si albastru ale 
+nodului. Daca nodul are copii, atunci el este intern si scriem in fisier 0. De 
+asemenea, deoarece nu putem sa scriem si datele copiilor lui, pentru ca 
+parcurgem arborele de la stanga la dreapta, ii vom adauga in coada. In final, 
+vom avea in fisierul de compresie arborele cuaternar: tipul fiecarui nod si 
+culorile RGB ale frunzelor.
+
+In main am declarat variabilele de tip char inputfile, outputfile, optiune si 
+factor. Daca numarul de argumente este egal cu 5, atunci fisierul din care voi 
+prelua datele va fi al patrulea argument, fisierul de output al cincilea, 
+optiunea va fi al doilea, iar factorul al treilea argument. Deschid fisierul 
+de tip ppm si citesc din acesta variabilele: tipul fisierului, de tip unsigned 
+char, latimea, inaltimea si numarul de culori de tip unsigned int. Dupa aceea 
+mut cursorul o pozitie la dreapta pentru a putea citi matricea de pixeli.
+Declar o matrice de tip Pixel, ce va reprezenta imaginea mea initiala, si o 
+aloc dinamic, avand latimea si inaltimea citite anterior din fisier, iar apoi 
+inchid fisierul. Declar o variabila de tip pointer la structura Node numita root 
+si o folosesc pentru a stoca adresa radacinii arborelui cuaternar, creat prin 
+apelul functiei Creare_quadtree. Parametrii sunt matricea initiala din fisier 
+coordonatele initiale 0, 0, dimensiunea adica inaltimea si factorul pentru media 
+culorilor. 
+Daca optiunea este -c1 atunci efectuez cerinta 1. Initializez 3 
+variabile pentru a stoca datele arborelui cuaternar: nr de niveluri, dimensiunea 
+maxima a unui bloc si nr de blocuri, create prin apelul functiilor mentionate 
+mai sus. Dupa care deschid fisierul de output si scriu datele acolo.  
+Daca optiunea este -c2 atunci efectuez cerinta 2. Deschid fisierul de output si 
+scriu in acesta dimensiunea imaginii. Dupa care apelez funcia printquadtree ce 
+imi scrie in fisier toatele datele despre arborele cuaternar construit. La final 
+inchid fisierul.
